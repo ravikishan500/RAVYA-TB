@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>रविकिशन की रंगीन दुनिया</title>
+    <style>
+        /* Google Fonts Import */
+        @import url('https://googleapis.com');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            background-color: #030008;
+        }
+
+        /* फुल स्क्रीन रंगीन डायनामिक बैकग्राउंड */
+        .app-wrapper {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: linear-gradient(125deg, #2e0854, #180206, #022a4a, #4a0e2e);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* राइट साइड घंटी आइकन */
+        .notification-icon {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            font-size: 1.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(0, 242, 254, 0.3);
+            border-radius: 50%;
+            width: 55px;
+            height: 55px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: #ff007f;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 800;
+            border-radius: 50%;
+            padding: 3px 7px;
+            box-shadow: 0 0 10px #ff007f;
+        }
+        /* कॉमन स्क्रीन सेटिंग्स (सभी पेजों के लिए फिक्स व्यू) */
+        .screen-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.9) translateY(40px);
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.6s ease;
+        }
+
+        /* एक्टिव पेज को सामने लाने की स्टाइल */
+        .screen-container.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1) translateY(0);
+        }
+
+        /* वेलकम स्क्रीन (पेज 1) - शुरू में यही दिखेगा */
+        #welcome-screen {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1) translateY(0);
+            z-index: 10;
+        }
+
+        .welcome-card, .form-card, .gift-card {
+            text-align: center;
+            padding: 45px 35px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 0, 128, 0.25);
+            box-shadow: 0 0 40px rgba(255, 0, 128, 0.2), 0 0 80px rgba(0, 255, 255, 0.1);
+            max-width: 90%;
+            width: 480px;
+        }
+
+        .heart-icon, .gift-icon {
+            font-size: 4.5rem;
+            margin-bottom: 25px;
+            display: inline-block;
+            filter: drop-shadow(0 0 25px #ff007f);
+            animation: heartbeat 1.2s infinite ease-in-out;
+        }
+
+        /* सतरंगी चमकता हुआ टेक्स्ट */
+        .brand-name, .gift-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1.4;
+            margin-bottom: 18px;
+            background: linear-gradient(45deg, #ff007f, #7928ca, #00f2fe, #ff007f);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shineText 3s linear infinite;
+        }
+
+        .tagline {
+            color: #ffb6c1;
+            font-size: 1.4rem;
+            font-style: italic;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(255, 0, 128, 0.6);
+        }
+
+        .next-step-text, .gift-desc {
+            color: #00f2fe;
+            font-size: 1.1rem;
+            margin-bottom: 35px;
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+        }
+
+        /* सभी बटन्स की स्टाइल */
+        .action-btn, .submit-btn, .start-now-btn {
+            background: linear-gradient(45deg, #ff007f, #7928ca, #00f2fe);
+            background-size: 200% auto;
+            border: none;
+            color: white;
+            padding: 15px 45px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 25px rgba(255, 0, 128, 0.5);
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        .form-card { border-color: rgba(0, 242, 254, 0.3); }
+        .gift-card { border-color: rgba(253, 186, 116, 0.4); }
+        .gift-desc { color: #ffedd5; font-size: 1.15rem; }
+
+        /* इनपुट फ़ील्ड्स स्टाइलिंग */
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            color: #00f2fe;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            color: white;
+            font-size: 1.05rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            resize: none;
+        }
+
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #ff007f;
+            box-shadow: 0 0 15px rgba(255, 0, 128, 0.4);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* मोबाइल नंबर बॉक्स */
+        .phone-number {
+            display: inline-block;
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: #00f2fe;
+            background: rgba(0, 242, 254, 0.1);
+            padding: 10px 25px;
+            border-radius: 14px;
+            border: 1px dashed #00f2fe;
+            margin-bottom: 30px;
+            cursor: pointer;
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+        }
+
+        /* हिस्ट्री पैनल */
+        .history-panel {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
+            z-index: 5000; display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
+        }
+        .history-panel.active { opacity: 1; pointer-events: auto; }
+        .history-card {
+            background: #0f0b18; border: 2px solid #7928ca; border-radius: 24px;
+            width: 90%; max-width: 500px; height: 65vh; display: flex; flex-direction: column; padding: 25px;
+        }
+        .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        .history-header h3 { color: #00f2fe; }
+        .close-history { color: #ff007f; font-size: 1.5rem; cursor: pointer; font-weight: bold; }
+        .history-list { flex: 1; overflow-y: auto; }
+        .history-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255, 255, 255, 0.08); padding: 12px; border-radius: 12px; margin-bottom: 12px; text-align: left; }
+        .history-item .date { color: #ffb6c1; font-size: 0.8rem; font-weight: bold; }
+        .history-item .detail { color: #ffffff; font-size: 0.95rem; margin-top: 4px; }
+        .history-item .detail span { color: #00f2fe; font-weight: 600; }
+
+        .bg-heart { position: absolute; pointer-events: none; animation: floatUp infinite linear; z-index: 1; }
+
+        /* Keyframes */
+        @keyframes heartbeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+        @keyframes shineText { to { background-position: 200% center; } }
+        @keyframes floatUp { 0% { transform: translateY(105vh) scale(0) rotate(0deg); opacity: 0; } 10% { opacity: 0.8; } 100% { transform: translateY(-10vh) scale(1.6) rotate(360deg); opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <div class="app-wrapper" id="app-wrapper">
+        
+        <!-- घंटी आइकन -->
+        <div class="notification-icon" onclick="toggleHistoryPanel(true)">
+            🔔 <span class="badge" id="noti-badge">0</span>
+        </div>
+
+        <!-- 1. वेलकम स्क्रीन (पेज 1) -->
+        <div class="screen-container active" id="welcome-screen">
+            <div class="welcome-card">
+                <div class="heart-icon">💓</div>
+                <div class="brand-name">RAVIKISHAN की दुनिया में<br>आपका स्वागत है</div>
+                <div class="tagline">हमें आपका ही इंतज़ार था...</div>
+                <div class="next-step-text">चलिए देखते हैं आगे क्या मिलता है...</div>
+                <button class="action-btn" onclick="handleWelcomeClick()">चलो चलें ✨</button>
+            </div>
+        </div>
+
+        <!-- 2. अध्ययन ट्रैकर फॉर्म स्क्रीन (पेज 2) -->
+        <div class="screen-container" id="form-screen">
+            <div class="form-card">
+                <div class="form-title">कृपया सही जानकारी भरें ✨</div>
+                
+                <form id="study-form" onsubmit="handleFormSubmit(event)">
+                    <div class="input-group">
+                        <label for="user-name">👤 आपका नाम क्या है?</label>
+                        <input type="text" id="user-name" placeholder="यहाँ अपना नाम लिखें..." required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="study-hours">⏱️ आप हमारे ऐप से कितना देर पढ़ाई करोगी 🕣?</label>
+                        <input type="text" id="study-hours" placeholder="उदाहरण: 4 घंटे, 30 मिनट..." required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="app-feedback">💬 रविकिशन के इस ऐप से पढ़ाई करके आपको कैसा लगा?</label>
+                        <textarea id="app-feedback" rows="3" placeholder="यहाँ अपनी पूरी राय विस्तार से लिखें... 😊" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">सफलतापूर्वक सबमिट करें 🚀</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 3. टारगेट बोर्ड गिफ्ट स्क्रीन (पेज 3) -->
+        <div class="screen-container" id="gift-screen">
+            <div class="gift-card">
+                <div class="gift-icon">🎁</div>
+                <div class="gift-title">आपके अपने रविकिशन ने आपके लिए<br>Target Board के सभी बैचेस भेजा है</div>
+                <div class="gift-desc">कृपया उन्हें भी कोई गिफ्ट दे दीजिए इस नंबर पर msg करके:</div>
+                <div class="phone-number" onclick="window.open('https://wa.me')">8360622531</div>
+                <button class="start-now-btn" onclick="window.open('#', '_blank')">Start Now 🚀</button>
+            </div>
+        </div>
+
+        <!-- 4. इतिहास रिकॉर्ड पैनल -->
+        <div class="history-panel" id="history-panel">
+            <div class="history-card">
+                <div class="history-header">
+                    <h3>📚 आपका सुरक्षित रिकॉर्ड</h3>
+                    <span class="close-history" onclick="toggleHistoryPanel(false)">✕</span>
+                </div>
+                <div class="history-list" id="history-list"></div>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            generateFloatingHearts();
+            updateHistoryUI();
+        });
+
+        function generateFloatingHearts() {
+            const wrapper = document.getElementById('app-wrapper');
+            const heartTypes = ['❤️', '💓', '💖', '💝', '💙', '💚', '💛', '💜', '✨'];
+            for (let i = 0; i < 25; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('bg-heart');
+                heart.innerText = heartTypes[Math.floor(Math.random() * heartTypes.length)];
+                heart.style.left = `${Math.random() * 100}vw`;
+                heart.style.animationDuration = `${Math.random() * 5 + 4}s`;
+                heart.style.animationDelay = `${Math.random() * 5}s`;
+                heart.style.fontSize = `${Math.random() * 25 + 14}px`;
+                wrapper.appendChild(heart);
+            }
+        }
+
+        // 🧠 स्मार्ट 24-घंटे का नेविगेशन बाइपास लॉजिक
+        function handleWelcomeClick() {
+            const lastSubmitted = localStorage.getItem('formLastSubmitted');
+            document.getElementById('welcome-screen').classList.remove('active');
+
+            if (lastSubmitted) {
+                const now = new Date().getTime();
+                const timePassed = now - parseInt(lastSubmitted);
+                const twentyFourHours = 24 * 60 * 60 * 1000;
+
+                // यदि 24 घंटे पूरे नहीं हुए हैं: फॉर्म को पूरी तरह छोड़ (Skip) दें, सीधे टारगेट बोर्ड स्क्रीन खोलें
+                if (timePassed < twentyFourHours) {
+                    document.getElementById('gift-screen').classList.add('active');
+                    return;
+                }
+            }
+            
+            // यदि पहली बार आए हैं या 24 घंटे बीत चुके हैं: फॉर्म दिखाएं
+            document.getElementById('form-screen').classList.add('active');
+        }
+
+        // फॉर्म सबमिट होने पर काम करने वाला लॉजिक
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            const nameVal = document.getElementById('user-name').value;
+            const hoursVal = document.getElementById('study-hours').value;
+            const feedbackVal = document.getElementById('app-feedback').value;
+            
+            const today = new Date();
+            const dateString = today.toLocaleDateString('hi-IN', { day: 'numeric', month: 'long' }) + " | " + today.toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' });
+
+            let currentLogs = JSON.parse(localStorage.getItem('studyRecords')) || [];
+            currentLogs.unshift({ date: dateString, name: nameVal, hours: hoursVal, feedback: feedbackVal });
+
+            // लोकलस्टोरेज में हमेशा के लिए लाइफटाइम सुरक्षित सेव
+            localStorage.setItem('studyRecords', JSON.stringify(currentLogs));
+            localStorage.setItem('formLastSubmitted', new Date().getTime());
+            
+            alert('🎉 आपकी जानकारी सफलतापूर्वक सुरक्षित कर ली गई है!');
+            
+            // फॉर्म स्क्रीन बंद करके तुरंत टारगेट बोर्ड स्क्रीन ओपन करें
+            document.getElementById('form-screen').classList.remove('active');
+            document.getElementById('gift-screen').classList.add('active');
+            
+            updateHistoryUI();
+        }
+
+        function toggleHistoryPanel(show) {
+            document.getElementById('history-panel').classList.toggle('active', show);
+        }
+
+        // घंटी का रिकॉर्ड लिस्ट अपडेट करना
+        function updateHistoryUI() {
+            const records = JSON.parse(localStorage.getItem('studyRecords')) || [];
+            document.getElementById('noti-badge').innerText = records.length;
+            const listContainer = document.getElementById('history-list');
+            
+            if(records.length === 0) {
+                listContainer.innerHTML = `<p style="color: #94a3b8; text-align:center; margin-top:40px;">अभी कोई रिकॉर्ड मौजूद नहीं है।</p>`;
+                return;
+            }
+
+            listContainer.innerHTML = records.map(item => `
+                <div class="history-item">
+                    <div class="date">📅 ${item.date}</div>
+                    <div class="detail"><span>नाम:</span> ${item.name}</div>
+                    <div class="detail"><span>पढ़ाई का समय:</span> ${item.hours}</div>
+                    <div class="detail"><span>अनुभव/राय:</span> ${item.feedback}</div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
+<!-- ==========================================================
+     पेज हटाने और बटन फिक्स करने का अचूक उपाय (सबसे लास्ट में पेस्ट करें)
+     ========================================================== -->
+<script>
+    (function absoluteFix() {
+        // 1. स्वागत स्क्रीन पर दिख रहे एक्स्ट्रा 'Start Now' बटन को तुरंत डिलीट करना
+        const welcomeCard = document.querySelector('.welcome-card');
+        if (welcomeCard) {
+            const extraBtn = welcomeCard.querySelector('.start-now-btn');
+            if (extraBtn) extraBtn.remove();
+        }
+
+        // 2. "चलो चलें" बटन के क्लिक पर पेज को जबरदस्ती हटाने का सिस्टम
+        const actionBtn = document.querySelector('.action-btn');
+        if (actionBtn) {
+            actionBtn.addEventListener('click', function() {
+                const welcomeScreen = document.getElementById('welcome-screen');
+                if (welcomeScreen) {
+                    // पेज को छुपाने के लिए उसे गायब (display: none) कर देना
+                    welcomeScreen.style.opacity = '0';
+                    welcomeScreen.style.transform = 'translateY(-100%)';
+                    welcomeScreen.style.transition = 'all 0.6s ease';
+                    
+                    setTimeout(() => {
+                        welcomeScreen.style.display = 'none';
+                    }, 600);
+                }
+            });
+        }
+    })();
+</script>
+<!-- ==========================================================
+     Start Now बटन पर लिंक सेट करने का कोड (सबसे लास्ट में पेस्ट करें)
+     ========================================================== -->
+<script>
+    (function setStartNowLink() {
+        // स्क्रीन पर मौजूद 'Start Now' बटन को ढूंढना
+        const startNowBtn = document.querySelector('.start-now-btn');
+        
+        if (startNowBtn) {
+            // पुराने क्लिक फंक्शन को हटाकर नया लिंक सेट करना
+            startNowBtn.onclick = function() {
+                
+                // ⚠️ नीचे 'https://your-website-link.com' को हटाकर अपना असली लिंक डाल दो
+                const myWebsiteUrl = 'https://ais-pre-2nf54bq7hle7qcwczxouzs-561745921472.asia-east1.run.app/';
+                
+                // यह यूजर को नए टैब में आपकी वेबसाइट पर ले जाएगा
+                window.open(myWebsiteUrl, '_blank');
+            };
+        }
+    })();
+</script>
+<!-- ==========================================================
+     स्पेशल हार्ट बटन और आई लव यू पॉप-अप सिस्टम
+     (इसे पुराने कोड के बिल्कुल अंत में पेस्ट करें)
+     ========================================================== -->
+<style>
+    /* 1. घंटी के ठीक बगल में नया हार्ट बटन */
+    .special-heart-icon {
+        position: fixed;
+        top: 25px;
+        right: 95px; /* घंटी से थोड़ा बाईं तरफ सेट किया है ताकि दोनों पास दिखें */
+        font-size: 1.8rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid rgba(255, 0, 128, 0.4);
+        border-radius: 50%;
+        width: 55px;
+        height: 55px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        z-index: 1000;
+        box-shadow: 0 0 15px rgba(255, 0, 128, 0.3);
+        transition: all 0.3s ease;
+        animation: heartPulseIcon 1.5s infinite ease-in-out;
+    }
+    .special-heart-icon:hover {
+        transform: scale(1.1);
+        background: rgba(255, 0, 127, 0.1);
+        box-shadow: 0 0 25px rgba(255, 0, 127, 0.7);
+    }
+
+    /* 2. स्पेशल लव पॉप-अप पैनल */
+    .love-panel-new {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        z-index: 6000; /* सबसे ऊपर रखने के लिए */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s ease;
+    }
+    .love-panel-new.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* 3. डिज़ाइनदार एनिमेटेड लव कार्ड */
+    .love-card-new {
+        background: radial-gradient(circle at 50% 50%, #2a0312 0%, #0d0106 100%);
+        border: 2px solid #ff007f;
+        border-radius: 30px;
+        width: 90%;
+        max-width: 450px;
+        padding: 40px 25px;
+        text-align: center;
+        box-shadow: 0 0 50px rgba(255, 0, 127, 0.5), inset 0 0 20px rgba(255, 0, 127, 0.2);
+        transform: scale(0.7) rotate(-5deg);
+        transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+    }
+    .love-panel-new.active .love-card-new {
+        transform: scale(1) rotate(0deg);
+    }
+
+    /* बंद करने का क्रॉस बटन */
+    .close-love-new {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        color: #94a3b8;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+    .close-love-new:hover { color: #ff007f; }
+
+    /* बड़ा धड़कता हुआ मुख्य दिल */
+    .big-love-heart {
+        font-size: 4.5rem;
+        margin-bottom: 20px;
+        display: inline-block;
+        filter: drop-shadow(0 0 20px #ff007f);
+        animation: heartbeat 1s infinite cubic-bezier(0.215, 0.610, 0.355, 1);
+    }
+
+    /* स्पेशल टेक्स्ट की स्टाइल */
+    .love-message-text {
+        font-size: 1.8rem;
+        font-weight: 800;
+        line-height: 1.5;
+        color: #ffffff;
+        background: linear-gradient(45deg, #ff007f, #ffb6c1, #00f2fe, #ff007f);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shineText 3s linear infinite;
+        text-shadow: 0 0 10px rgba(255, 0, 127, 0.2);
+    }
+
+    /* बटन और आइकन के लिए स्पेशल कीफ़्रेम्स */
+    @keyframes heartPulseIcon {
+        0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 0, 128, 0.3); }
+        50% { transform: scale(1.08); box-shadow: 0 0 25px rgba(255, 0, 128, 0.6); border-color: #ff007f; }
+    }
+</style>
+
+<!-- ==========================================================
+     टारगेट बोर्ड गिफ्ट एक्सटेंशन + रवि किशन लव सरप्राइज पॉप-अप
+     (इसे पुराने कोड के बिल्कुल अंत में पेस्ट करें)
+     ========================================================== -->
+<style>
+    /* 1. टारगेट बोर्ड वाले पेज पर नया गिफ्ट सेक्शन डिजाइन */
+    .target-gift-container {
+        margin: 20px auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        background: rgba(255, 0, 128, 0.08);
+        border: 1px solid rgba(255, 0, 128, 0.3);
+        padding: 12px 20px;
+        border-radius: 18px;
+        max-width: 90%;
+        width: 400px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        animation: subtlePulse 2s infinite ease-in-out;
+    }
+    
+    .target-gift-container:hover {
+        transform: scale(1.03);
+        background: rgba(255, 0, 128, 0.15);
+        border-color: #ff007f;
+        box-shadow: 0 0 20px rgba(255, 0, 127, 0.3);
+    }
+
+    .target-gift-text {
+        color: #ffb6c1;
+        font-size: 1.1rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-shadow: 0 0 10px rgba(255, 0, 127, 0.4);
+    }
+
+    /* बगल में धड़कता हुआ छोटा दिल */
+    .inline-heart-btn {
+        font-size: 1.5rem;
+        display: inline-block;
+        animation: miniHeartbeat 1s infinite ease-in-out;
+    }
+
+    /* 2. नया फुल स्क्रीन लव पॉप-अप पैनल */
+    .love-panel-fixed {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(3, 0, 8, 0.9);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        z-index: 99999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* पॉप-अप एक्टिव स्टेट */
+    .love-panel-fixed.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* 3. अंदर से बाहर की ओर आने वाला (Zoom-In) 3D लव कार्ड */
+    .love-card-fixed {
+        background: radial-gradient(circle at 50% 50%, #3a0319 0%, #0d0106 100%);
+        border: 2px solid #ff007f;
+        border-radius: 32px;
+        width: 85%;
+        max-width: 440px;
+        padding: 45px 25px;
+        text-align: center;
+        box-shadow: 0 0 60px rgba(255, 0, 127, 0.6), inset 0 0 25px rgba(255, 0, 127, 0.3);
+        
+        /* अंदर से बाहर की ओर आने वाला एनीमेशन सेटअप */
+        transform: scale(0.3);
+        transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+    }
+    
+    /* जब एक्टिव होगा तो ज़ूम होकर बाहर आएगा */
+    .love-panel-fixed.active .love-card-fixed {
+        transform: scale(1);
+    }
+
+    /* क्लोज क्रॉस बटन */
+    .close-love-fixed {
+        position: absolute;
+        top: 15px; right: 20px;
+        color: #94a3b8;
+        font-size: 1.6rem;
+        cursor: pointer;
+        font-weight: bold;
+        transition: color 0.3s;
+    }
+    .close-love-fixed:hover { color: #ff007f; }
+
+    /* बड़ा धड़कता हुआ मुख्य दिल */
+    .big-love-heart-fixed {
+        font-size: 5rem;
+        margin-bottom: 25px;
+        display: inline-block;
+        filter: drop-shadow(0 0 25px #ff007f);
+        animation: bigHeartbeat 1s infinite cubic-bezier(0.215, 0.610, 0.355, 1);
+    }
+
+    /* सतरंगी चमकता हुआ टेक्स्ट */
+    .love-message-text-fixed {
+        font-size: 1.9rem;
+        font-weight: 900;
+        line-height: 1.5;
+        color: #ffffff;
+        background: linear-gradient(45deg, #ff007f, #ffb6c1, #00f2fe, #ff007f);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: textShineAnimation 3s linear infinite;
+        text-shadow: 0 0 15px rgba(255, 0, 127, 0.3);
+    }
+
+    /* किस और प्यार की बौछार के लिए एनिमेटेड फ्लाइंग किस */
+    .flying-kiss-effect {
+        font-size: 2.2rem;
+        margin-top: 20px;
+        display: inline-block;
+        animation: kissFloat 1.5s infinite ease-in-out;
+    }
+
+    /* ==========================================================
+       एनीमेशन कीफ़्रेम्स (Core Animations)
+       ========================================================== */
+    @keyframes bigHeartbeat {
+        0%, 100% { transform: scale(1); }
+        30% { transform: scale(1.15); filter: drop-shadow(0 0 35px #ff007f); }
+        60% { transform: scale(1.05); }
+    }
+    @keyframes miniHeartbeat {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.2); filter: drop-shadow(0 0 8px #ff007f); }
+    }
+    @keyframes textShineAnimation {
+        to { background-position: 200% center; }
+    }
+    @keyframes subtlePulse {
+        0%, 100% { box-shadow: 0 0 10px rgba(255, 0, 127, 0.1); }
+        50% { box-shadow: 0 0 20px rgba(255, 0, 127, 0.3); }
+    }
+    @keyframes kissFloat {
+        0%, 100% { transform: translateY(0) scale(1); }
+        50% { transform: translateY(-10px) scale(1.1); filter: drop-shadow(0 0 10px #ff007f); }
+    }
+</style>
+
+<!-- नया लव संदेश पॉप-अप पैनल (अंदर से बाहर आने वाला 3D लेआउट) -->
+<div class="love-panel-fixed" id="absolute-love-panel" onclick="toggleAbsoluteLove(false)">
+    <div class="love-card-fixed" onclick="event.stopPropagation()">
+        <span class="close-love-fixed" onclick="toggleAbsoluteLove(false)">✕</span>
+        <div class="big-love-heart-fixed">💓</div>
+        <div class="love-message-text-fixed">
+            I LOVE YOU<br>RAVYA KI MUMMY
+        </div>
+        <!-- इमोजी टूटने की समस्या को ठीक करने के लिए एनिमेटेड लव एलिमेंट्स -->
+        <div class="flying-kiss-effect">😘😘</div>
+    </div>
+</div>
+
+<script>
+    (function injectHeartSectionToTargetBoard() {
+        // 1. टारगेट बोर्ड वाले गिफ्ट कार्ड के अंदर आपके मोबाइल नंबर को ढूंढना
+        const giftCard = document.querySelector('.gift-card') || document.getElementById('gift-screen');
+        
+        if (giftCard) {
+            // चेक करें कि क्या नंबर बॉक्स पहले से मौजूद है
+            const phoneNumberBox = giftCard.querySelector('.phone-number');
+            
+            if (phoneNumberBox) {
+                // पहले से बने पुराने कंटेनर को हटाना (अगर कोई पुराना बना हो तो)
+                const oldContainer = document.getElementById('injected-gift-container');
+                if (oldContainer) oldContainer.remove();
+
+                // 2. नया गिफ्ट कंटेनर बनाना (लाइन और दिल के साथ)
+                const giftSection = document.createElement('div');
+                giftSection.id = 'injected-gift-container';
+                giftSection.className = 'target-gift-container';
+                giftSection.setAttribute('onclick', 'toggleAbsoluteLove(true)');
+                
+                giftSection.innerHTML = `
+                    <span class="target-gift-text">यहाँ पर क्लिक करिये कुछ गिफ्ट है</span>
+                    <span class="inline-heart-btn">❤️</span>
+                `;
+                
+                // नंबर बॉक्स के ठीक नीचे (Start Now बटन से पहले) इसे लगा देना
+                phoneNumberBox.parentNode.insertBefore(giftSection, phoneNumberBox.nextSibling);
+            }
+        }
+        
+        // सुरक्षा जांच: पुराने टॉप राइट वाले हार्ट बटन को स्क्रीन से पूरी तरह छुपाना/हटाना
+        const oldTopHeart = document.querySelector('.special-heart-icon');
+        if (oldTopHeart) oldTopHeart.remove();
+    })();
+
+    // पॉप-अप को अंदर से बाहर (Zoom-In) की ओर खोलने और बंद करने का फ़ंक्शन
+    function toggleAbsoluteLove(show) {
+        const panel = document.getElementById('absolute-love-panel');
+        if (panel) {
+            panel.classList.toggle('active', show);
+        }
+    }
+</script>
+<!-- ==========================================================
+     परफॉर्मेंस बूस्टर + 2 सेकंड एनिमेटेड लोडिंग पॉप-अप
+     (इसे पुराने कोड के बिल्कुल अंत में पेस्ट करें)
+     ========================================================== -->
+<style>
+    /* 1. सुपर-फास्ट परफॉर्मेंस के लिए पुराने लोड को कम करना */
+    .bg-heart {
+        will-change: transform, opacity; /* ब्राउज़र मेमोरी को बूस्ट करने के लिए */
+    }
+
+    /* 2. मॉडर्न नियॉन लोडिंग पॉप-अप लेआउट */
+    .loading-popup-fixed {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(3, 0, 8, 0.92);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        z-index: 999999; /* सबसे ऊपर रखने के लिए */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s ease;
+    }
+
+    /* लोडिंग पॉप-अप एक्टिव स्टेट */
+    .loading-popup-fixed.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .loading-card-fixed {
+        background: rgba(20, 10, 35, 0.8);
+        border: 2px solid #00f2fe;
+        border-radius: 24px;
+        padding: 40px 30px;
+        text-align: center;
+        box-shadow: 0 0 50px rgba(0, 242, 254, 0.4);
+        max-width: 85%;
+        width: 380px;
+        transform: scale(0.8);
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15);
+    }
+
+    .loading-popup-fixed.active .loading-card-fixed {
+        transform: scale(1);
+    }
+
+    /* शानदार घूमता हुआ नियॉन रिंग स्पिनर */
+    .neon-spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid rgba(0, 242, 254, 0.1);
+        border-radius: 50%;
+        border-top-color: #00f2fe;
+        border-bottom-color: #ff007f;
+        margin: 0 auto 25px;
+        animation: neonSpin 1s linear infinite;
+        filter: drop-shadow(0 0 10px #00f2fe);
+    }
+
+    /* लोडिंग टेक्स्ट */
+    .loading-text-new {
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: #ffffff;
+        letter-spacing: 0.5px;
+        background: linear-gradient(45deg, #00f2fe, #ff007f);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
+    }
+
+    /* स्पिनर एनीमेशन कीफ़्रेम */
+    @keyframes neonSpin {
+        to { transform: rotate(360deg); }
+    }
+</style>
+
+<!-- विज़ुअल इंटरफ़ेस: 2 सेकंड रुकिए लोडिंग पॉप-अप -->
+<div class="loading-popup-fixed" id="global-loading-popup">
+    <div class="loading-card-fixed">
+        <div class="neon-spinner"></div>
+        <div class="loading-text-new">2 सेकंड रुकिए चलते हैं...</div>
+    </div>
+</div>
+
+<script>
+    (function optimizeAndAddLoader() {
+        // 1. मेमोरी और स्पीड बूस्ट: बैकग्राउंड के बहुत ज्यादा लोड लेने वाले दिलों को सीमित करना
+        const allHearts = document.querySelectorAll('.bg-heart');
+        if (allHearts.length > 20) {
+            // अगर 20 से ज्यादा दिल बन रहे हैं तो फालतू दिलों को हटाकर ऐप की स्पीड बढ़ाएं
+            for (let i = 20; i < allHearts.length; i++) {
+                if(allHearts[i]) allHearts[i].remove();
+            }
+        }
+
+        // 2. लोडिंग पॉप-अप को बटनों के साथ कनेक्ट करने का स्मार्ट लॉजिक
+        const loader = document.getElementById('global-loading-popup');
+        
+        // मुख्य 'चलो चलें' बटन को ढूंढना
+        const welcomeBtn = document.querySelector('.action-btn');
+        if (welcomeBtn) {
+            // पुराने क्लिक फंक्शन को सुरक्षित रखकर नया लोडिंग टाइमर इंजेक्ट करना
+            const originalWelcomeClick = welcomeBtn.onclick;
+            welcomeBtn.onclick = function(e) {
+                if (loader) loader.classList.add('active'); // लोडिंग चालू करें
+                
+                setTimeout(() => {
+                    if (loader) loader.classList.remove('active'); // 2 सेकंड बाद लोडिंग बंद
+                    
+                    // आगे बढ़ने का पुराना लॉजिक चालू करें
+                    if (typeof handleWelcomeClick === 'function') {
+                        handleWelcomeClick();
+                    } else if (originalWelcomeClick) {
+                        originalWelcomeClick.call(this, e);
+                    }
+                }, 2000); // ठीक 2 सेकंड का होल्ड टाइमर
+            };
+        }
+
+        // फॉर्म सबमिट करने वाले बटन में भी लोडिंग इंजेक्ट करना
+        const studyForm = document.getElementById('study-form');
+        if (studyForm) {
+            studyForm.addEventListener('submit', function(e) {
+                // जब तक लोडिंग चल रही है, सबमिशन को विज़ुअली होल्ड करें
+                if (loader && !loader.classList.contains('active')) {
+                    if (loader) loader.classList.add('active');
+                }
+            }, true);
+        }
+    })();>
+</script>
+<!-- ==========================================================
+     बॉक्स 1: नियॉन टाइमर और पॉज़-रिज्यूम बटन्स की डिजाइन
+     ========================================================== -->
+<style>
+    /* टाइमर दिखाने के लिए सुंदर नियॉन बॉक्स */
+    .dynamic-timer-box {
+        background: rgba(0, 242, 254, 0.08);
+        border: 1px dashed #00f2fe;
+        padding: 10px 20px;
+        border-radius: 15px;
+        color: #ff007f;
+        font-size: 1.1rem;
+        font-weight: 800;
+        margin-bottom: 20px;
+        display: none;
+        text-shadow: 0 0 10px rgba(255, 0, 127, 0.5);
+        letter-spacing: 1px;
+    }
+    .dynamic-timer-box span { color: #00f2fe; }
+
+    /* पॉज़ और रिज्यूम बटन्स का डिब्बा */
+    .timer-controls-box {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 25px;
+        display: none;
+    }
+
+    /* कंट्रोल बटन्स की स्टाइल */
+    .ctrl-btn {
+        padding: 10px 24px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        color: white;
+    }
+    .btn-pause { background: linear-gradient(135deg, #f59e0b, #d97706); border: 1px solid rgba(245, 158, 11, 0.4); }
+    .btn-pause:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(245, 158, 11, 0.6); }
+    .btn-resume { background: linear-gradient(135deg, #10b981, #059669); border: 1px solid rgba(16, 185, 129, 0.4); }
+    .btn-resume:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(16, 185, 129, 0.6); }
+</style>
+
+<!-- विज़ुअल बटन्स जो स्क्रीन पर जुड़ेंगे -->
+<div class="timer-controls-box" id="app-timer-controls">
+    <button class="ctrl-btn btn-pause" id="timer-pause-btn" onclick="pauseStudyTimer()">⏸️ पॉज़ करें</button>
+    <button class="ctrl-btn btn-resume" id="timer-resume-btn" onclick="resumeStudyTimer()" style="display: none;">▶️ फिर शुरू करें</button>
+</div>
+<!-- ==========================================================
+     बॉक्स 2: फॉर्म और नेविगेशन को टाइमर से जोड़ने का लॉजिक
+     ========================================================== -->
+<script>
+    // पुराने 24 घंटे वाले फिक्स लॉक को पूरी तरह से बंद (Disable) करना
+    if (typeof checkFormAvailability === 'function') {
+        window.checkFormAvailability = function() { return true; };
+    }
+    localStorage.removeItem('formLastSubmitted'); 
+
+    var countdownInterval;
+
+    (function initTimerStructure() {
+        // स्वागत स्क्रीन पर टाइमर एलिमेंट्स को अपनी सही जगह पर सेट करना
+        const nextStepText = document.querySelector('.next-step-text');
+        if (nextStepText && !document.getElementById('app-dynamic-timer')) {
+            const timerDiv = document.createElement('div');
+            timerDiv.id = 'app-dynamic-timer';
+            timerDiv.className = 'dynamic-timer-box';
+            nextStepText.parentNode.insertBefore(timerDiv, nextStepText);
+        }
+
+        const timerBox = document.getElementById('app-dynamic-timer');
+        const controlsBox = document.getElementById('app-timer-controls');
+        if (timerBox && controlsBox) {
+            timerBox.parentNode.insertBefore(controlsBox, timerBox.nextSibling);
+        }
+
+        // "चलो चलें" बटन का नया नेविगेशन लॉजिक
+        window.handleWelcomeClick = function() {
+            const welcome = document.getElementById('welcome-screen');
+            const formScreen = document.getElementById('form-screen');
+            const giftScreen = document.getElementById('gift-screen');
+            const timerEnd = localStorage.getItem('studyTimerEnd');
+            const now = new Date().getTime();
+
+            if (welcome) welcome.classList.remove('active');
+
+            if (timerEnd && (now < parseInt(timerEnd) || localStorage.getItem('studyTimerPaused') === 'true')) {
+                if (giftScreen) giftScreen.classList.add('active');
+            } else {
+                if (formScreen) formScreen.classList.add('active');
+            }
+        };
+
+        // फॉर्म सबमिट होने पर नया डायनामिक लॉक जनरेट करने का सिस्टम
+        const form = document.getElementById('study-form');
+        if (form) {
+            form.onsubmit = null; 
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const nameVal = document.getElementById('user-name').value;
+                const hoursInput = document.getElementById('study-hours').value;
+                const feedbackVal = document.getElementById('app-feedback').value;
+
+                let hours = parseInt(hoursInput.replace(/[^0-9]/g, ''));
+                if (isNaN(hours) || hours <= 0) hours = 2; 
+
+                const now = new Date().getTime();
+                const targetTime = now + (hours * 60 * 60 * 1000);
+
+                localStorage.setItem('studyTimerEnd', targetTime);
+                localStorage.setItem('studyTimerPaused', 'false');
+                localStorage.removeItem('studyTimerRemaining');
+
+                const today = new Date();
+                const dateString = today.toLocaleDateString('hi-IN', { day: 'numeric', month: 'long' }) + " | " + today.toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' });
+                let currentLogs = JSON.parse(localStorage.getItem('studyRecords')) || [];
+                currentLogs.unshift({ date: dateString, name: nameVal, hours: hours + " घंटे का लक्ष्य", feedback: feedbackVal });
+                localStorage.setItem('studyRecords', JSON.stringify(currentLogs));
+
+                alert(`🎯 शानदार! आपका ${hours} घंटे की पढ़ाई का लक्ष्य सेट हो गया है।`);
+
+                document.getElementById('form-screen').classList.remove('active');
+                if (document.getElementById('gift-screen')) document.getElementById('gift-screen').classList.add('active');
+
+                if (typeof updateHistoryUI === 'function') updateHistoryUI();
+                startCountdownTracker(); 
+            });
+        }
+    })();
+</script>
+<!-- ==========================================================
+     BOX 3: लाइव उल्टी गिनती और पॉज़/रिज्यूम का मुख्य इंजन
+     ========================================================== -->
+<script>
+    (function startTimerEngine() {
+        // लाइव उल्टी गिनती चलाने वाला फ़ंक्शन
+        window.startCountdownTracker = function() {
+            const timerBox = document.getElementById('app-dynamic-timer');
+            const controls = document.getElementById('app-timer-controls');
+            const actionBtn = document.querySelector('.action-btn');
+            
+            const isPaused = localStorage.getItem('studyTimerPaused') === 'true';
+            const timerEnd = localStorage.getItem('studyTimerEnd');
+
+            if (!timerEnd || !timerBox) {
+                if (controls) controls.style.display = 'none';
+                if (timerBox) timerBox.style.display = 'none';
+                if (actionBtn) actionBtn.innerText = 'चलो चलें ✨';
+                return;
+            }
+
+            if (controls) controls.style.display = 'flex';
+
+            // यदि टाइमर को रोका (Pause) गया है
+            if (isPaused) {
+                clearInterval(countdownInterval);
+                const remaining = parseInt(localStorage.getItem('studyTimerRemaining')) || 0;
+                
+                const hours = Math.floor(remaining / (1000 * 60 * 60));
+                const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+
+                timerBox.style.display = 'block';
+                timerBox.innerHTML = `⏸️ पढ़ाई रुकी हुई है: <span>${hours}घंटे ${minutes}मिनट ${seconds}सेकंड</span>`;
+                
+                document.getElementById('timer-pause-btn').style.display = 'none';
+                document.getElementById('timer-resume-btn').style.display = 'inline-block';
+                if (actionBtn) actionBtn.innerText = 'पढ़ाई रुकी है ⏸️';
+                return;
+            }
+
+            // यदि टाइमर लाइव चल रहा है
+            clearInterval(countdownInterval);
+            document.getElementById('timer-pause-btn').style.display = 'inline-block';
+            document.getElementById('timer-resume-btn').style.display = 'none';
+
+            countdownInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = parseInt(timerEnd) - now;
+
+                if (distance <= 0) {
+                    clearInterval(countdownInterval);
+                    localStorage.removeItem('studyTimerEnd');
+                    localStorage.removeItem('studyTimerPaused');
+                    localStorage.removeItem('studyTimerRemaining');
+                    if (timerBox) timerBox.style.display = 'none';
+                    if (controls) controls.style.display = 'none';
+                    if (actionBtn) actionBtn.innerText = 'चलो चलें ✨';
+                } else {
+                    const hours = Math.floor(distance / (1000 * 60 * 60));
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    if (timerBox) {
+                        timerBox.style.display = 'block';
+                        timerBox.innerHTML = `⏳ पढ़ाई का समय चालू है: <span>${hours}घंटे ${minutes}मिनट ${seconds}सेकंड</span>`;
+                    }
+                    if (actionBtn) actionBtn.innerText = 'पढ़ाई जारी रखें 📚';
+                }
+            }, 1000);
+        };
+
+        // पॉज़ (Pause) बटन दबाने पर
+        window.pauseStudyTimer = function() {
+            const timerEnd = localStorage.getItem('studyTimerEnd');
+            if (!timerEnd) return;
+
+            const now = new Date().getTime();
+            const remaining = parseInt(timerEnd) - now;
+
+            if (remaining > 0) {
+                clearInterval(countdownInterval);
+                localStorage.setItem('studyTimerPaused', 'true');
+                localStorage.setItem('studyTimerRemaining', remaining);
+                startCountdownTracker();
+            }
+        };
+
+        // रिज्यूम (Resume) बटन दबाने पर
+        window.resumeStudyTimer = function() {
+            const isPaused = localStorage.getItem('studyTimerPaused') === 'true';
+            const remaining = parseInt(localStorage.getItem('studyTimerRemaining'));
+
+            if (isPaused && remaining) {
+                const now = new Date().getTime();
+                localStorage.setItem('studyTimerEnd', now + remaining);
+                localStorage.setItem('studyTimerPaused', 'false');
+                localStorage.removeItem('studyTimerRemaining');
+                startCountdownTracker();
+            }
+        };
+
+        // पेज रीफ्रेश होने पर भी चालू रखने के लिए
+        setTimeout(startCountdownTracker, 600);
+    })();
+</script>
